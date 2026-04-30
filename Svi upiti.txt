@@ -1,0 +1,158 @@
+-- 1. 5.	Da li broj djece u kući (Kidhome + Teenhome) utiče na ukupnu potrošnju i izbor proizvoda? 
+SELECT 
+    (Kidhome + Teenhome) AS Ukupno_djece,
+    
+    COUNT(ID) AS Broj_kupaca,
+    
+    ROUND(AVG(MntWines), 2)        AS Avg_Vino,
+    ROUND(AVG(MntFruits), 2)       AS Avg_Voce,
+    ROUND(AVG(MntMeatProducts), 2) AS Avg_Meso,
+    ROUND(AVG(MntFishProducts), 2) AS Avg_Riba,
+    ROUND(AVG(MntSweetProducts), 2) AS Avg_Slatkisi,
+    ROUND(AVG(MntGoldProds), 2)    AS Avg_Gold,
+    ROUND(AVG(Total_spent), 2)     AS Avg_Ukupno
+
+FROM marketing_clean
+
+GROUP BY (Kidhome + Teenhome)
+
+ORDER BY Ukupno_djece ASC;
+
+
+-- Potrosnja u odnosu na dohodak kupca
+
+
+SELECT 
+    Income_category,
+    
+    COUNT(ID)                           AS Broj_kupaca,
+    
+    ROUND(AVG(MntWines), 2)             AS Avg_Vino,
+    ROUND(AVG(MntFruits), 2)            AS Avg_Voce,
+    ROUND(AVG(MntMeatProducts), 2)      AS Avg_Meso,
+    ROUND(AVG(MntFishProducts), 2)      AS Avg_Riba,
+    ROUND(AVG(MntSweetProducts), 2)     AS Avg_Slatkisi,
+    ROUND(AVG(MntGoldProds), 2)         AS Avg_Gold,
+    ROUND(AVG(Total_spent), 2)          AS Avg_Ukupno_potrosnja
+
+FROM marketing_clean
+
+GROUP BY Income_category
+
+ORDER BY Avg_Ukupno_potrosnja DESC;
+
+-- 2.	Na koje kategorije proizvoda se troši najviše novca i razlikuje li se to po starosnim grupama?
+
+SELECT
+    Year_category,
+    
+    COUNT(ID)                           AS Broj_kupaca,
+    
+    ROUND(AVG(MntWines), 2)             AS Avg_Vino,
+    ROUND(AVG(MntFruits), 2)            AS Avg_Voce,
+    ROUND(AVG(MntMeatProducts), 2)      AS Avg_Meso,
+    ROUND(AVG(MntFishProducts), 2)      AS Avg_Riba,
+    ROUND(AVG(MntSweetProducts), 2)     AS Avg_Slatkisi,
+    ROUND(AVG(MntGoldProds), 2)         AS Avg_Gold,
+    ROUND(AVG(Total_spent), 2)          AS Avg_Ukupno,
+    
+    ROUND(AVG(MntWines) * 100.0 / 
+          AVG(Total_spent), 1)          AS Udio_Vino_pct,
+    ROUND(AVG(MntMeatProducts) * 100.0 / 
+          AVG(Total_spent), 1)          AS Udio_Meso_pct,
+    ROUND(AVG(MntFruits) * 100.0 / 
+          AVG(Total_spent), 1)          AS Udio_Voce_pct,
+    ROUND(AVG(MntFishProducts) * 100.0 / 
+          AVG(Total_spent), 1)          AS Udio_Riba_pct,
+    ROUND(AVG(MntSweetProducts) * 100.0 / 
+          AVG(Total_spent), 1)          AS Udio_Slatkisi_pct,
+    ROUND(AVG(MntGoldProds) * 100.0 / 
+          AVG(Total_spent), 1)          AS Udio_Gold_pct
+
+FROM marketing_clean
+
+GROUP BY Year_category
+
+ORDER BY 
+    CASE Year_category
+        WHEN 'Do 30'        THEN 1
+        WHEN 'Od 30 do 40'  THEN 2
+        WHEN 'Od 40 do 50'  THEN 3
+        WHEN 'Od 50 do 60'  THEN 4
+        WHEN 'Preko 60'     THEN 5
+    END;
+    
+    
+    
+    -- 3.	Koji profil kupca najčešće kupuje na popustu – mlađi ili stariji,
+    
+    SELECT
+    Year_category,
+    
+    COUNT(ID)                               AS Broj_kupaca,
+    ROUND(AVG(NumDealsPurchase), 2)        AS Avg_Kupovina_na_popust,
+    
+    ROUND(SUM(CASE WHEN Deals_category = 'Nikad na popustu' 
+        THEN 1 ELSE 0 END) * 100.0 
+        / COUNT(ID), 1)                     AS Pct_Nikad,
+    ROUND(SUM(CASE WHEN Deals_category = '1-2 puta' 
+        THEN 1 ELSE 0 END) * 100.0 
+        / COUNT(ID), 1)                     AS Pct_1_2,
+    ROUND(SUM(CASE WHEN Deals_category = '3-4 puta' 
+        THEN 1 ELSE 0 END) * 100.0 
+        / COUNT(ID), 1)                     AS Pct_3_4,
+    ROUND(SUM(CASE WHEN Deals_category = 'Preko 6 puta' 
+        THEN 1 ELSE 0 END) * 100.0 
+        / COUNT(ID), 1)                     AS Pct_preko_6,
+
+    ROUND(SUM(CASE WHEN Deals_category != 'Nikad na popustu' 
+        THEN 1 ELSE 0 END) * 100.0 
+        / COUNT(ID), 1)                     AS Pct_ukupno_na_popust
+
+FROM marketing_clean
+
+GROUP BY Year_category
+
+ORDER BY 
+    CASE Year_category
+        WHEN 'Do 30'        THEN 1
+        WHEN 'Od 30 do 40'  THEN 2
+        WHEN 'Od 40 do 50'  THEN 3
+        WHEN 'Od 50 do 60'  THEN 4
+        WHEN 'Preko 60'     THEN 5
+    END;
+    
+    
+    --4.	Kako se kanali kupovine (web, prodavnica, katalog) razlikuju po starosnim grupama?
+    
+    SELECT
+    Year_category,
+    
+    COUNT(ID)                                   AS Broj_kupaca,
+
+    -- Apsolutne vrijednosti
+    ROUND(AVG(NumWebPurchases), 2)              AS Avg_Web,
+    ROUND(AVG(NumStorePurchase), 2)            AS Avg_Prodavnica,
+    ROUND(AVG(numcatalogpurcha), 2)          AS Avg_Katalog,
+    ROUND(AVG(Total_purchases), 2)              AS Avg_Ukupno_kupovina,
+
+    -- Udjeli u % po kanalu
+    ROUND(AVG(NumWebPurchases) * 100.0 / 
+          AVG(Total_purchases), 1)              AS Pct_Web,
+    ROUND(AVG(NumStorePurchase) * 100.0 / 
+          AVG(Total_purchases), 1)              AS Pct_Prodavnica,
+    ROUND(AVG(numcatalogpurcha) * 100.0 / 
+          AVG(Total_purchases), 1)              AS Pct_Katalog
+
+FROM marketing_clean
+
+GROUP BY Year_category
+
+ORDER BY
+    CASE Year_category
+        WHEN 'Do 30'        THEN 1
+        WHEN 'Od 30 do 40'  THEN 2
+        WHEN 'Od 40 do 50'  THEN 3
+        WHEN 'Od 50 do 60'  THEN 4
+        WHEN 'Preko 60'     THEN 5
+    END;
