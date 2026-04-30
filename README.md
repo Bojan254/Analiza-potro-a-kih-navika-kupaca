@@ -5,8 +5,8 @@ identifikacije obrazaca u potrošačkim navikama kupaca.
 Projekat realizovan u okviru Škole analitike i vještačke inteligencije.
 
 ## Tehnologije
-- Python (Pandas, NumPy) — Google Colab
-- SQL — SQLiteOnline
+- Python (Pandas, NumPy) - Google Colab
+- SQL - SQLiteOnline
 - Power BI
 
 ## Sadržaj projekta
@@ -24,5 +24,5 @@ Projekat realizovan u okviru Škole analitike i vještačke inteligencije.
 - Analiza profila kupaca koji kupuju na popust
 
 ## Baza podataka
-Marketing Campaign dataset — sadrži podatke o 2.000+ kupaca 
+Marketing Campaign dataset - sadrži podatke o 2.000+ kupaca 
 uključujući demografske podatke, prihode i potrošačke navike.
